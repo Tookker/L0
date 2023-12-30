@@ -1,0 +1,13 @@
+version: "3.5"
+
+services:
+  db:
+    container_name: db
+    restart: always
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./enviroments/postgre.env
+    image: postgres:alpine3.17
+    volumes:
+    - ./sqlscripts/orders.sql:/docker-entrypoint-initdb.d/taorderssk.sql
