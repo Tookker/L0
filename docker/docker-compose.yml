@@ -11,3 +11,10 @@ services:
     image: postgres:alpine3.17
     volumes:
     - ./sqlscripts/orders.sql:/docker-entrypoint-initdb.d/taorderssk.sql
+
+  nuts:
+    container_name: nuts
+    ports:
+      - 4222:4222
+    image: nats:2.7.0-alpine
+
