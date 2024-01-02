@@ -10,7 +10,7 @@ services:
       - ./enviroments/postgre.env
     image: postgres:alpine3.17
     volumes:
-    - ./sqlscripts/orders.sql:/docker-entrypoint-initdb.d/taorderssk.sql
+    - ./sqlscripts/orders.sql:/docker-entrypoint-initdb.d/orders.sql
 
   nuts:
     container_name: nuts
