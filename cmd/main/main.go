@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"L0/internal/caches/ordercache/ordercachemap"
 	"L0/internal/config"
 	"L0/internal/logger"
 )
@@ -19,4 +20,5 @@ func main() {
 		log.Fatalln(err.Error())
 	}
 
+	orderCache := ordercachemap.NewCache(logger)
 }
