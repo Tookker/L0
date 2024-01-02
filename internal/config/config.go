@@ -20,6 +20,12 @@ type Config struct {
 	DataBase string `yaml:"DataBase"`
 }
 
+/*
+@brief Загрузить параметры из конфиг файла.
+@param path - Путь к файлу с конфигурациями.
+@return *Config - Сформированный конфиг файл, при ошибки вернет nil
+@return error - Ошибка в процессе парсинга конфиг файла, при успешном парсинге вернёт nil
+*/
 func LoadConfig(path string) (*Config, error) {
 
 	if len(path) == 0 {
