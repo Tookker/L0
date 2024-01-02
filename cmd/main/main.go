@@ -1,9 +1,11 @@
 package main
 
 import (
-	"L0/internal/config"
 	"log"
 	"os"
+
+	"L0/internal/config"
+	"L0/internal/logger"
 )
 
 func main() {
@@ -11,4 +13,10 @@ func main() {
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
+
+	logger, err := logger.NewLogger(config)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
 }
