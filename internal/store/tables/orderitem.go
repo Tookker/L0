@@ -20,5 +20,5 @@ type OrderItem interface {
 		@param order - описание заказа
 		@return error - ошибка, при успещном поиске вернется nil
 	*/
-	AddOrder(id uint, order *models.Order) error
+	AddOrder(order *models.Order) error
 }

@@ -30,7 +30,7 @@ type OrderItemRepo struct {
 @return error - описание возникшей ошибке, при успешном выполнении вернется nil
 */
 func fillCache(db *sql.DB, orderCache ordercache.OrderCache, logger *zap.Logger) error {
-	request := `
+	const request = `
 	SELECT 
 		orders_items.id_order,
 		orders.order_uid, 
@@ -176,6 +176,110 @@ func (o *OrderItemRepo) GetOrder(ctx context.Context, id uint) (models.Order, er
 }
 
 func (o *OrderItemRepo) AddOrder(order *models.Order) error {
-	//TODO реализовать добавление заказа в БД и КЭШ
+
+	tx, err := o.db.Begin()
+	if err != nil {
+		o.logger.Error(err.Error())
+		return err
+	}
+
+	const insertDeliverys = `
+	INSERT INTO deliverys (name, phone, zip, city, address, region, email)
+	VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id;
+	`
+	var idDelivery uint
+
+	res := tx.QueryRow(insertDeliverys, &order.Delivery.Name, &order.Delivery.Phone,
+		&order.Delivery.Zip, &order.Delivery.City, &order.Delivery.Address,
+		&order.Delivery.Region, &order.Delivery.Email)
+
+	err = res.Scan(&idDelivery)
+	if err != nil {
+		o.logger.Error(err.Error())
+		tx.Rollback()
+		return err
+	}
+
+	const insertPayments = `
+	INSERT INTO payments (transaction, currency, provider, amount, payment_dt, bank, delivery_cost, goods_total, custom_fee)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id;
+	`
+	var idPayments uint
+
+	res = tx.QueryRow(insertPayments, &order.Payment.Transaction, &order.Payment.Currency,
+		&order.Payment.Provider, &order.Payment.Amount, &order.Payment.PaymentDt,
+		&order.Payment.Bank, &order.Payment.DeliveryCost, &order.Payment.GoodsTotal, &order.Payment.CustomFee)
+
+	err = res.Scan(&idPayments)
+	if err != nil {
+		o.logger.Error(err.Error())
+		tx.Rollback()
+		return err
+	}
+
+	const insertOrder = `
+	INSERT INTO orders (order_uid, track_number, entry, id_delivery, id_payment,
+	locale,  customer_id, delivery_service, shardkey, sm_id, date_created, oof_shard)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id;
+	`
+	var idOrder uint
+	res = tx.QueryRow(insertOrder, &order.UID, &order.TrackNum, &order.Entry, &idDelivery, &idPayments,
+		&order.Locale, &order.CustomerID, &order.DeliveryService, &order.ShardKey, &order.SmID,
+		&order.CreationDate, &order.CofShard)
+
+	err = res.Scan(&idOrder)
+	if err != nil {
+		o.logger.Error(err.Error())
+		tx.Rollback()
+		return err
+	}
+
+	const insertItem = `
+	INSERT INTO items (chrt_id, track_number, price, rid, name, sale, size, total_price, nm_id, brand, status)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id;
+	`
+	sizeItems := len(order.Items)
+	arrIdItem := make([]uint, 0, sizeItems)
+
+	for i := 0; i < sizeItems; i++ {
+		var id uint
+		res = tx.QueryRow(insertItem, &order.Items[i].ChrtID, &order.Items[i].TrackNum, &order.Items[i].Price, &order.Items[i].RID,
+			&order.Items[i].Name, &order.Items[i].Sale, &order.Items[i].Size, &order.Items[i].TotalPrice, &order.Items[i].NmID,
+			&order.Items[i].Brand, &order.Items[i].Status)
+
+		err = res.Scan(&id)
+		if err != nil {
+			o.logger.Error(err.Error())
+			tx.Rollback()
+			return err
+		}
+
+		arrIdItem = append(arrIdItem, id)
+	}
+
+	const insertOrderItem = `
+	INSERT INTO orders_items (id_order, id_item)
+	VALUES ($1, $2);
+	`
+	for i := 0; i < sizeItems; i++ {
+		_, err = tx.Exec(insertOrderItem, &idOrder, &arrIdItem[i])
+		if err != nil {
+			o.logger.Error(err.Error())
+			tx.Rollback()
+			return err
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		o.logger.Error(err.Error())
+		return err
+	}
+
+	err = o.orderCache.AddOrder(idOrder, order)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
