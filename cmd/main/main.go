@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"L0/internal/caches/ordercache/ordercachemap"
 	"L0/internal/config"
 	"L0/internal/logger"
+	"L0/internal/store/postgre"
 )
 
 func main() {
@@ -20,5 +20,12 @@ func main() {
 		log.Fatalln(err.Error())
 	}
 
-	orderCache := ordercachemap.NewCache(logger)
+	db, err := postgre.NewPostgre(config, logger)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	if db == nil {
+		return
+	}
 }
