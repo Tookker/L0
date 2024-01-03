@@ -33,7 +33,7 @@ func (r *ChiRouter) setUIHandlers() {
 	var handlers = controller.NewUIController(r.logger)
 
 	r.router.Route("/", func(rout chi.Router) {
-		rout.Get("", handlers.GetMainUi)
+		rout.Get("/", handlers.GetMainUi)
 	})
 }
 
