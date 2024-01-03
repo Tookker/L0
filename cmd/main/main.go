@@ -7,6 +7,7 @@ import (
 	"L0/internal/config"
 	"L0/internal/logger"
 	"L0/internal/router"
+	"L0/internal/server"
 	"L0/internal/store/postgre"
 )
 
@@ -27,5 +28,10 @@ func main() {
 	}
 
 	router := router.NewChiRouter(db, logger)
+	server := server.NewServer(router, db, config)
 
+	server.StartServer()
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
 }
