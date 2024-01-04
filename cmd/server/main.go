@@ -9,6 +9,7 @@ import (
 	"L0/internal/router"
 	"L0/internal/server"
 	"L0/internal/store/postgre"
+	"L0/internal/subscriber"
 )
 
 func main() {
@@ -23,6 +24,16 @@ func main() {
 	}
 
 	db, err := postgre.NewPostgre(config, logger)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	broker, err := subscriber.NewBroker(config, db, logger)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	err = broker.Subscribe()
 	if err != nil {
 		log.Fatalln(err.Error())
 	}

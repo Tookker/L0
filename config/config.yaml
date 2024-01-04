@@ -1,3 +1,9 @@
 LogLevel: debug
 ServerIp: ":8080"
+
 DataBase: "host=127.0.0.1 user=admin password=root dbname=orders port=5432 sslmode=disable"
+
+ClusterID: test-cluster
+PublisherID: publisher
+SubscriberID: subscriber
+Subject: order
