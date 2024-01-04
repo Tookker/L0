@@ -26,7 +26,6 @@ func NewUIController(logger *zap.Logger) UI {
 }
 
 func (u *UIController) GetMainUi(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	data, err := u.loadFile(mainUI)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

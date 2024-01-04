@@ -30,7 +30,7 @@ func main() {
 	router := router.NewChiRouter(db, logger)
 	server := server.NewServer(router, db, config)
 
-	server.StartServer()
+	err = server.StartServer()
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
