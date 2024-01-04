@@ -8,8 +8,14 @@
 			clearTable("paymentTable")
 			clearTable("deliveryTable")
 			clearTable("itemsTable")
-
+			var lable = document.getElementById("errorMsg")
+			lable.innerHTML = ""
             var number = document.getElementById("number").value;
+
+			if (!isDigit(number)) {
+				lable.innerHTML = "Enter only positive numbers!"
+				return
+			}
             var url = "/order/" + number;
             var xhr = new XMLHttpRequest();
             xhr.open("GET", url, true);
@@ -18,16 +24,36 @@
                     var response = JSON.parse(xhr.responseText);
                     fillTables(response)
                     console.log(response);
-                } 
+                } else if (xhr.status === 400) {
+					var msg = "Order # " + number + " not found!";
+					lable.innerHTML = msg 
+				}
             };
             xhr.send();
         }
     </script>
 
+	<script>
+		function isDigit(n) {
+			for (var i = 0; i < n.size; i++) {
+				if (!/^[0-9]$/.test(n[i])) {
+					return false
+				}
+			}
+
+			return true
+		}
+	</script>
+
 </head>
 <body>
-    <input type="number" id="number" placeholder="Enter order ID"><br>
-    <button onclick="sendGetRequest()">Получить данные о заказе</button>
+	<center>
+		<input type="number" id="number" placeholder="Enter order ID"></input>
+		<br></br>
+		<button onclick="sendGetRequest()">Get info about order</button>
+		<br></br>
+		<lable id="errorMsg" style="color:#FF0000" ></lable>
+	</center>
     <table id="orderTable" width="100%" border="1" cellpadding="4" cellspacing="0">
 		<caption>Order</caption>
 		<thead>
