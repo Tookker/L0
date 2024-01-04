@@ -15,9 +15,13 @@ var (
 )
 
 type Config struct {
-	LogLevel string `yaml:"LogLevel"`
-	ServerIp string `yaml:"ServerIp"`
-	DataBase string `yaml:"DataBase"`
+	LogLevel     string `yaml:"LogLevel"`
+	ServerIp     string `yaml:"ServerIp"`
+	DataBase     string `yaml:"DataBase"`
+	ClusterID    string `yaml:"ClusterID"`
+	PublisherID  string `yaml:"PublisherID"`
+	SubscriberID string `yaml:"SubscriberID"`
+	Subject      string `yaml:"Subject"`
 }
 
 /*

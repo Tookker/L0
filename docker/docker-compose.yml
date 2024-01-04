@@ -16,5 +16,7 @@ services:
     container_name: nuts
     ports:
       - 4222:4222
-    image: nats:2.7.0-alpine
+      - "8222:8222"
+    restart: always
+    image: nats-streaming:0.25.4
 

@@ -35,7 +35,7 @@
 
 	<script>
 		function isDigit(n) {
-			for (var i = 0; i < n.size; i++) {
+			for (var i = 0; i < n.length; i++) {
 				if (!/^[0-9]$/.test(n[i])) {
 					return false
 				}
@@ -48,7 +48,7 @@
 </head>
 <body>
 	<center>
-		<input type="number" id="number" placeholder="Enter order ID"></input>
+		<input id="number" placeholder="Enter order ID"></input>
 		<br></br>
 		<button onclick="sendGetRequest()">Get info about order</button>
 		<br></br>
