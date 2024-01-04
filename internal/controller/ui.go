@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const mainUI = "./../../ui/mainui.html"
+const mainUI = "./ui/mainui.html"
 
 type UI interface {
 	GetMainUi(w http.ResponseWriter, r *http.Request)
