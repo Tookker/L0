@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Info about order</title>
+    <script>
+        function sendGetRequest() {
+			clearTable("orderTable")
+			clearTable("paymentTable")
+			clearTable("deliveryTable")
+			clearTable("itemsTable")
+
+            var number = document.getElementById("number").value;
+            var url = "/order/" + number;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    fillTables(response)
+                    console.log(response);
+                } 
+            };
+            xhr.send();
+        }
+    </script>
+
+</head>
+<body>
+    <input type="number" id="number" placeholder="Enter order ID"><br>
+    <button onclick="sendGetRequest()">Получить данные о заказе</button>
+    <table id="orderTable" width="100%" border="1" cellpadding="4" cellspacing="0">
+		<caption>Order</caption>
+		<thead>
+			<tr>
+				<th scope="col">UID</th>
+				<th scope="col">Truck Number</th>
+				<th scope="col">Entry</th>
+				<th scope="col">Locale</th>
+				<th scope="col">International signature</th>
+				<th scope="col">Customer ID</th>
+				<th scope="col">Delivery service</th>
+				<th scope="col">ShardKey</th>
+				<th scope="col">Sm ID</th>
+				<th scope="col">Creation date</th>
+				<th scope="col">COF shard</th>
+			</tr>
+		</thead>
+	</table>
+
+  <table id="deliveryTable" width="100%" border="1" cellpadding="4" cellspacing="0"">
+		<caption>Delivery service</caption>
+		<thead>
+			<tr>
+				<th scope="col">Name</th>
+				<th scope="col">Phone</th>
+				<th scope="col">ZIP</th>
+				<th scope="col">City</th>
+				<th scope="col">Address</th>
+				<th scope="col">Region</th>
+				<th scope="col">Email</th>
+			</tr>
+		</thead>
+	</table>
+
+  <table id="paymentTable" width="100%" border="1" cellpadding="4" cellspacing="0">
+		<caption>Payment info</caption>
+		<thead>
+			<tr>
+				<th scope="col">Transaction</th>
+				<th scope="col">Request ID</th>
+				<th scope="col">Currency</th>
+				<th scope="col">Provider</th>
+				<th scope="col">Amount</th>
+				<th scope="col">Payment DT</th>
+				<th scope="col">Bank</th>
+        		<th scope="col">Delivery cost</th>
+        		<th scope="col">Goods total</th>
+        		<th scope="col">Custom fee</th>
+			</tr>
+		</thead>
+	</table>
+
+  <table id="itemsTable" width="100%" border="1" cellpadding="4" cellspacing="0">
+		<caption>Items</caption>
+		<thead>
+			<tr>
+				<th scope="col">CHRT ID</th>
+				<th scope="col">Track number</th>
+				<th scope="col">Price</th>
+				<th scope="col">RID</th>
+				<th scope="col">Name</th>
+				<th scope="col">Sale</th>
+				<th scope="col">Size</th>
+        		<th scope="col">Total price</th>
+        		<th scope="col">NM ID</th>
+        		<th scope="col">Brand</th>
+        		<th scope="col">Status</th>
+			</tr>
+		</thead>
+	</table>
+
+	<script>
+		function fillTables(json) {
+			fillOrderTable(json)
+			fillDeliveryTable(json)
+			fillPaymentTable(json)
+			fillItemTable(json)
+		}
+	</script>
+
+	<script>
+		function fillOrderTable(json) {
+			var table = document.getElementById("orderTable");
+			var row = table.insertRow();
+			
+			var orderUIDCell = row.insertCell(0);
+			orderUIDCell.innerHTML = json["order_uid"];
+
+			var trackNumberCell = row.insertCell(1);
+			trackNumberCell.innerHTML = json["track_number"];
+
+			var entryCell = row.insertCell(2);
+			entryCell.innerHTML = json["entry"];
+
+			var localeCell = row.insertCell(3);
+			localeCell.innerHTML = json["locale"];
+
+			var internalSignatureCell = row.insertCell(4);
+			internalSignatureCell.innerHTML = json["internal_signature"];
+
+			var customerIDCell = row.insertCell(5);
+			customerIDCell.innerHTML = json["customer_id"];
+
+			var deliveryServiceCell = row.insertCell(6);
+			deliveryServiceCell.innerHTML = json["delivery_service"];
+
+			var shardKeyCell = row.insertCell(7);
+			shardKeyCell.innerHTML = json["shardkey"];
+
+			var smIDCell = row.insertCell(8);
+			smIDCell.innerHTML = json["sm_id"];
+
+			var dateCreateCell = row.insertCell(9);
+			dateCreateCell.innerHTML = json["date_created"];
+
+			var oofShardCell = row.insertCell(10);
+			oofShardCell.innerHTML = json["oof_shard"];
+		}
+	</script>
+
+	<script>
+		function fillDeliveryTable(json) {
+			var table = document.getElementById("deliveryTable");
+			var row = table.insertRow();
+			
+			var nameCell = row.insertCell(0);
+			nameCell.innerHTML = json.delivery["name"];
+
+			var phoneCell = row.insertCell(1);
+			phoneCell.innerHTML = json.delivery["phone"];
+
+			var zipCell = row.insertCell(2);
+			zipCell.innerHTML = json.delivery["zip"];
+
+			var cityCell = row.insertCell(3);
+			cityCell.innerHTML = json.delivery["city"];
+
+			var addressCell = row.insertCell(4);
+			addressCell.innerHTML = json.delivery["address"];
+
+			var regionCell = row.insertCell(5);
+			regionCell.innerHTML = json.delivery["region"];
+
+			var emailCell = row.insertCell(6);
+			emailCell.innerHTML = json.delivery["email"];
+		}
+	</script>
+
+	<script>
+		function fillPaymentTable(json) {
+			var table = document.getElementById("paymentTable");
+			var row = table.insertRow();
+			
+			var transactionCell = row.insertCell(0);
+			transactionCell.innerHTML = json.payment["transaction"];
+
+			var requestIDCell = row.insertCell(1);
+			requestIDCell.innerHTML = json.payment["request_id"];
+
+			var currencyCell = row.insertCell(2);
+			currencyCell.innerHTML = json.payment["currency"];
+
+			var providerCell = row.insertCell(3);
+			providerCell.innerHTML = json.payment["provider"];
+
+			var amountCell = row.insertCell(4);
+			amountCell.innerHTML = json.payment["amount"];
+
+			var paymentDTCell = row.insertCell(5);
+			paymentDTCell.innerHTML = json.payment["payment_dt"];
+
+			var bankCell = row.insertCell(6);
+			bankCell.innerHTML = json.payment["bank"];
+
+			var deliveryCostCell = row.insertCell(7);
+			deliveryCostCell.innerHTML = json.payment["delivery_cost"];
+
+			var goodsTotalCell = row.insertCell(8);
+			goodsTotalCell.innerHTML = json.payment["goods_total"];
+
+			var customFeeCell = row.insertCell(9);
+			customFeeCell.innerHTML = json.payment["custom_fee"];
+		}
+	</script>
+
+	<script>
+		function fillItemTable(json) {
+			var table = document.getElementById("itemsTable");
+
+			for (var i = 0; i < json.items.length; i++) {
+				var row = table.insertRow();
+				
+				var chrtIDCell = row.insertCell(0);
+				chrtIDCell.innerHTML = json.items[i]["chrt_id"];
+
+				var trackNumberCell = row.insertCell(1);
+				trackNumberCell.innerHTML = json.items[i]["track_number"];
+
+				var priceCell = row.insertCell(2);
+				priceCell.innerHTML = json.items[i]["price"];
+
+				var ridCell = row.insertCell(3);
+				ridCell.innerHTML = json.items[i]["rid"];
+
+				var nameCell = row.insertCell(4);
+				nameCell.innerHTML = json.items[i]["name"];
+
+				var saleCell = row.insertCell(5);
+				saleCell.innerHTML = json.items[i]["sale"];
+
+				var sizeCell = row.insertCell(6);
+				sizeCell.innerHTML = json.items[i]["size"];
+
+				var totalPriceCell = row.insertCell(7);
+				totalPriceCell.innerHTML = json.items[i]["total_price"];
+
+				var nmIDCell = row.insertCell(8);
+				nmIDCell.innerHTML = json.items[i]["nm_id"];
+
+				var brandCell = row.insertCell(9);
+				brandCell.innerHTML = json.items[i]["brand"];
+
+				var statusCell = row.insertCell(10);
+				statusCell.innerHTML = json.items[i]["status"];
+			}
+		}
+	</script>
+
+	<script>
+		function clearTable(nameTable) {
+			var table = document.getElementById(nameTable);
+			var rowCount = table.rows.length;
+
+			for (var i = rowCount - 1; i > 0; i--) {
+			table.deleteRow(i);
+			}
+		}
+	</script>
+
+</body>
+</html>
